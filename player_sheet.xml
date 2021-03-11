@@ -1,0 +1,219 @@
+<!--
+  Scale shouldn't need to be changed unless you make the character sheet incredibly big till the text is blurry
+  Position is the x y z position of the element, 0 0 0 being in the center of the character sheet
+  rotation Shouldn't need to be changed
+  Width and Height can change the size of a text box/statButton
+  and fontSize will change the actual size of the text inside
+  color on a button will change the background color of it, it's set to transparent at the moment, color on text will change the color of text
+  textColor on buttons will let you change the color of the text but will be overwritten by how I have it set on the lua "see top of lua code"
+  the ids of objects and clickFuntions shouldn't be changed as the lua will be reliant on them
+  characterLimit on the textField can be changed to whatever, but you'll see what happens when text can't fit in the box.
+  https://api.tabletopsimulator.com/ui/introUI/ everything can be found in more detail here.
+-->
+
+<Defaults>
+  <button
+    scale = "0.1 0.1 0.1"
+    position = "0 0 -25"
+    rotation ="0 0 180"
+    color = "rgba(0, 0, 0, 0)"
+    textColor = "black"
+    text ="0"
+    />
+
+    <text
+      scale = "0.1 0.1 0.1"
+      position = "0 0 -25"
+      rotation ="0 0 180"
+      textColor = "black"
+      text = "0"
+    />
+
+    <inputField
+      scale = "0.1 0.1 0.1"
+      position = "0 0 -25"
+      rotation ="0 0 180"
+      width = "500"
+      height = "80"
+      fontSize = "50"
+      colors = "rgba(0, 0, 0, 0)|Black"
+      />
+
+</Defaults>
+
+<inputField
+  id = "playerName"
+  characterLimit = "19"
+  position = "16 -90 -25"
+  placeholder = "Player Name"
+  onValueChanged = "playerInputField"
+  >
+
+</inputField>
+
+<inputField
+  id = "playerDetails"
+  position = "2 0 25"
+  rotation ="0 180 180"
+  width = "925"
+  height = "1700"
+  placeholder = "Details"
+  onValueChanged = "detailInputField"
+  lineType = "MultiLineNewLine"
+  >
+
+</inputField>
+
+
+<button
+  id = "Resolve"
+  height = "300"
+  width = "300"
+  position = "-5 -65 -25"
+  fontSize = "200"
+  onClick = "statButton">
+
+</button>
+
+<text
+  id = "ResolveMax"
+  height = "115"
+  width = "115"
+  position = "1 -40 -25"
+  fontSize = "60">
+</text>
+
+<text
+  id = "ResolveRest"
+  height = "115"
+  width = "115"
+  position = "-16 -40 -25"
+  fontSize = "60">
+</text>
+
+<text
+  id = "WeightMax"
+  height = "80"
+  width = "80"
+  position = "-40 -25 -25"
+  fontSize = "55">
+</text>
+
+<button
+  id = "Weight"
+  height = "80"
+  width = "80"
+  position = "-30 -25 -21"
+  fontSize = "55"
+  onClick = "statButton">
+</button>
+
+<text
+  id = "StuntsStart"
+  height = "80"
+  width = "80"
+  position = "6 -10 -21"
+  fontSize = "55">
+</text>
+
+<text
+  id = "StuntsMax"
+  height = "80"
+  width = "80"
+  position = "-15 -10 -21"
+  fontSize = "55">
+</text>
+
+<text
+  id = "Shift"
+  height = "80"
+  width = "80"
+  position = "14 20 -21"
+  fontSize = "55">
+</text>
+
+<text
+  id = "Walk"
+  height = "80"
+  width = "80"
+  position = "-10 20 -21"
+  fontSize = "55">
+</text>
+
+<text
+  id = "Run"
+  height = "80"
+  width = "80"
+  position = "-33 20 -21"
+  fontSize = "55">
+</text>
+
+<text
+  id = "WilCapstone"
+  height = "100"
+  width = "200"
+  position = "-35 -37.5 -25"
+  fontSize = "40"
+  text = ""
+  >
+</text>
+
+<text
+  id = "PerCapstone"
+  height = "100"
+  width = "200"
+  position = "-35 -8 -25"
+  fontSize = "40"
+  text = ""
+  >
+</text>
+
+<button
+  id = "Level"
+  height = "125"
+  width = "125"
+  position = "-38 -90 -25"
+  fontSize = "80"
+  onClick = "statButton">
+</button>
+
+
+<button
+  id = "STR"
+  height = "125"
+  width = "125"
+  position = "18 -75.5 -25"
+  fontSize = "100"
+  textColor = "#B70025"
+  onClick = "statButton">
+</button>
+
+<button
+  id = "WIL"
+  height = "125"
+  width = "125"
+  position = "18 -63.5 -25"
+  fontSize = "100"
+  textColor = "#27C75D"
+  onClick = "statButton">
+</button>
+
+<button
+  id = "AGI"
+  height = "125"
+  width = "125"
+  position = "18 -51.5 -25"
+  fontSize = "100"
+  textColor = "#6DA1FD"
+  onClick = "statButton">
+</button>
+
+<button
+  id = "PER"
+  height = "125"
+  width = "125"
+  position = "18 -39 -25"
+  fontSize = "100"
+  textColor = "#ECC63B"
+  onClick = "statButton">
+</button>

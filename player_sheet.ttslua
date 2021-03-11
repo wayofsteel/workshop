@@ -1,0 +1,337 @@
+function onLoad(save_state)
+
+  statColors = {
+    ["STR"] = "#B70025",
+    ["WIL"] = "#27C75D",
+    ["AGI"] = "#6DA1FD",
+    ["PER"] = "#ECC63B"
+  }
+  --this code is making sure when the player sheets are saved and respawned they keep their saved data
+ if save_state == "" then
+
+    --The values are in this section are the defaults that the player sheet will be set to if it has not been edited before. Text color should be changed here because for some reason editing the text borks the color.
+    save = {
+      statInputs = {
+        ["Level"] = {
+          value = 0,
+          textColor = "black",
+          min = 0
+        },
+
+        ["playerName"] = {
+          value = "",
+          textColor = "black"
+        },
+
+        ["playerDetails"] = {
+          value = "",
+          textColor = "black"
+        },
+
+        ["STR"] = {
+          value = 0,
+          textColor = statColors["STR"],
+          min = 0
+        },
+
+        ["WIL"] = {
+          value = 0,
+          textColor = statColors["WIL"],
+          min = 0
+        },
+
+        ["AGI"] = {
+          value = 0,
+          textColor = statColors["AGI"],
+          min = 0
+        },
+
+        ["PER"] = {
+          value = 0,
+          textColor = statColors["PER"],
+          min = 0
+        },
+
+        ["Resolve"] = {
+          value = 0,
+          textColor = "black",
+          min = -10
+        },
+
+        ["Weight"] = {
+          value = 0,
+          textColor = "black",
+          min = 0
+        }
+      }
+    }
+else
+    --If the object has ever been saved before it will grab the save
+    save = JSON.decode(save_state)
+end
+
+ Wait.frames(function() setUI() end, 10)
+end
+
+--this function is for controlling the visuals on the sheet
+function setUI()
+  setInputUI() --this displays the values that can be changed and set by the player
+  local statsTbl = getStats() --it then uses these values to calculate all the other values which is getStats is also the function where the formulae are
+  setStatUI(statsTbl) --Then it also displays those stats
+
+end
+
+function setStatUI(stats)
+  for id, tbl in pairs(stats) do
+    local value = tbl.value
+
+    self.UI.setAttribute(id, "text", tostring(value))
+
+    if tbl.textColor ~= nil then
+      local textColor = tbl.textColor
+      self.UI.setAttribute(id, "color" ,textColor)
+    end
+  end
+end
+
+function setInputUI()
+  local statInputs = save.statInputs
+
+  for id, tbl in pairs(statInputs) do
+    local value = tbl.value
+    local textColor = tbl.textColor
+    self.UI.setAttribute(id, "text" ,tostring(value))
+    self.UI.setAttribute(id, "textColor" ,textColor)
+  end
+
+  --I used decals to get the dice to switch between 3 and 4 dice. The images can be changed by getting a different image url.
+  local decals = {
+    die_3 = "http://cloud-3.steamusercontent.com/ugc/1646592730554487669/75E8BB2BBA6D33E3998F2FD033E8872BE7E5966E/",
+    die_4 = "http://cloud-3.steamusercontent.com/ugc/1646592730554402663/5E4052134392A36CBBAC438BFD7DA1FC7CDECE52/"
+  }
+  if statInputs["STR"].value >= 5 then
+
+    self.setDecals({
+      {
+        name = "die_4",
+        url = decals.die_4,
+        rotation = {90, 180, 0},
+        position = {0.03, 0.25, 0.38},
+        scale = {0.1, 0.1, 0.1}
+      }
+    })
+  else
+    self.setDecals({
+      {
+        name = "die_3",
+        url = decals.die_3,
+        rotation = {90, 180, 0},
+        position = {0.03, 0.25, 0.38},
+        scale = {0.1, 0.1, 0.1}
+      }
+    })
+  end
+
+end
+
+--function to edit formulaes
+function getStats()
+
+  local statInputs = save.statInputs
+
+  --this is a table of all the functions I'm using to calculate the stats, the formulaes within the functions should be editable as long as they're returning a number
+  local statFunctions = {
+
+    --RESOLVE
+    ResolveMax = function(STR, WIL, AGI, PER) --If you want to change the data being used Make sure the number of paramaters in the function match what you're passing through. You can name them differently here but they have to be in the same order.
+      local value = 4 + (1*STR) + (4*WIL) + (1*AGI) + (2*PER) --write the formulae and save the result into value with "value ="
+
+      return math.ceil(value) --always return the result. math.ceil rounds up
+    end,
+
+    ResolveRest = function(ResolveMax)
+      local value = ResolveMax / 2
+
+      return math.ceil(value)
+    end,
+
+    --STUNTS
+    StuntsStart = function(AGI, PER)
+      local value = AGI-1+(PER/4)
+
+      return math.floor(value)
+    end,
+
+    StuntsMax = function(PER)
+      local value = PER
+
+      return value
+    end,
+
+    --MOVE
+    Shift = function()
+      local value = 1
+
+      return value
+    end,
+
+    Walk = function(AGI)
+      local value
+
+      if AGI >= 5 then
+        value = 4
+      else
+        value = 3
+      end
+
+      return value
+    end,
+
+    Run = function(AGI)
+      local value = AGI + 4
+      return value
+    end,
+
+    --Weight
+    WeightMax = function(STR, WIL, AGI, PER)
+      local value = 2 + (2*STR) + (5*WIL) + (1*AGI) + (1*PER)
+      return math.ceil(value)
+    end,
+
+    --capstoneText
+    WilCapstone = function(WIL)
+      local text = ""
+      if WIL >= 5 then
+        text = "Fight On: Draw 2"
+      end
+
+      return text
+    end,
+
+    PerCapstone = function(PER)
+      local text = ""
+      if PER >= 5 then
+        text = "Draw 2, Keep 1"
+      end
+
+      return text
+    end
+
+  }
+
+  local STR = statInputs["STR"].value
+  local WIL = statInputs["WIL"].value
+  local AGI = statInputs["AGI"].value
+  local PER = statInputs["PER"].value
+
+  stats = {}
+
+
+  -- RESOLVE
+  stats["ResolveMax"] = {
+    --find function and type in stats you need for the formulae, this is how you pass through the data you need. The order matter.
+    value = statFunctions.ResolveMax(STR, WIL, AGI, PER)
+  }
+
+  --You can just get the data in a similar way as below if you ever want to use data in the formulae that isn't defined yet
+  --Just remeber this is being calculated top to bottom. So anything that uses "ResolveMax" would have to be cut and paste below this same goes for the other values
+  local ResolveMax = stats["ResolveMax"].value
+
+
+
+  stats["ResolveRest"] = {
+    value = statFunctions.ResolveRest(ResolveMax)
+  }
+
+  --STUNTS
+  stats["StuntsStart"] = {
+    value = statFunctions.StuntsStart(AGI, PER)
+  }
+
+  stats["StuntsMax"] = {
+    value = statFunctions.StuntsMax(PER)
+  }
+
+  --MOVE
+  stats["Shift"] = {
+    value = statFunctions.Shift()
+  }
+
+  stats["Walk"] = {
+    value = statFunctions.Walk(AGI)
+  }
+
+
+  stats["Run"] = {
+    value = statFunctions.Run(AGI)
+  }
+
+  --Weight
+
+  stats["WeightMax"] = {
+    value = statFunctions.WeightMax(STR, WIL, AGI, PER)
+  }
+
+  --capstoneText
+
+  stats["WilCapstone"] = {
+    value = statFunctions.WilCapstone(WIL),
+    textColor = statColors["WIL"]
+  }
+
+  stats["PerCapstone"] = {
+    value = statFunctions.PerCapstone(PER),
+    textColor = statColors["PER"]
+  }
+
+
+  return stats
+end
+
+--this function runs when the buttons on the sheet are clicked
+function statButton(player, clickIndex, id)
+ local change = 1
+ if clickIndex == "-2" then
+   change = -1
+ end
+
+ local statInputs = save["statInputs"]
+
+ local newValue = statInputs[id].value + change
+
+ if statInputs[id].min ~= nil then
+   if statInputs[id].min <= newValue then
+     statInputs[id].value  = newValue
+   end
+ end
+
+ --every times values change the UI is updated
+ setUI()
+ --and a new save is made
+ self.script_state = onSave()
+end
+
+--when a player types in the name input field it updates the save data
+function playerInputField(player, str)
+  local name = str
+
+  save["statInputs"]["playerName"].value = name
+end
+
+function detailInputField(player, str)
+  local details = str
+
+  save["statInputs"]["playerDetails"].value = details
+end
+
+--after someone leaves the text boxes a save is made
+function onEndEdit(player, str)
+  self.script_state = onSave()
+end
+
+--function to get formatted save data whenever the object is saved and manually when it's called
+function onSave()
+   local currentSave = JSON.encode(save)
+
+  return currentSave
+end
