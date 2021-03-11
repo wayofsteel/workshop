@@ -43,23 +43,6 @@ function decrease()
     end
 end
 
---Activates when + is hit. Adds 5 to 'count' then updates the display button.
-function increase5()
-    count = count + 5
-    updateDisplay()
-end
-
---Activates when - is hit. Subtracts 5 from 'count' then updates the display button.
-function decrease5()
-    --Prevents count from going below 0
-    if count > 4 then
-        count = count - 5
-    else
-        count = 0
-    end
-    updateDisplay()
-end
-
 function customSet()
     local description = self.getDescription()
     if description != '' and type(tonumber(description)) == 'number' then
