@@ -6,13 +6,12 @@ end
 
 function onLoad(saved_data)
     generateButtonParameters()
-    --Checks if there is a saved data. If there is, it gets the saved value for 'count'
-    if saved_data != '' then
-        local loaded_data = JSON.decode(saved_data)
+
+    count = 10 --Default value, 10, can be overridden by saved_data
+
+    local loaded_data = JSON.decode(saved_data)
+    if loaded_data ~= '' then
         count = loaded_data.saved_count
-    else
-        --If there wasn't saved data, the default value is set to 10.
-        count = 10
     end
 
     --Generates the buttons after putting the count value onto the 'display' button
