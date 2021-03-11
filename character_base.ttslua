@@ -24,8 +24,6 @@ function onLoad(saved_data)
     self.createButton(b_display)
     self.createButton(b_plus)
     self.createButton(b_minus)
-    self.createButton(b_plus5)
-    self.createButton(b_minus5)
 end
 
 --Activates when + is hit. Adds 1 to 'count' then updates the display button.
