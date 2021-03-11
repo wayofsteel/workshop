@@ -5,30 +5,29 @@ function onSave()
 end
 
 function onLoad(saved_data)
+    count = JSON.decode(saved_data).saved_count or 10
 
-    count = 10 --Default value, 10, can be overridden by saved_data
+    button_list = {
+        [0] = { width = 300, position = {x=0.0, y=0.1, z=-1.5} },
+        ['increase'] = { label =  '+', position = {x=0.4, y=0.1, z=-1.5} },
+        ['decrease'] = { label =  '-', position = {x=-0.4, y=0.1, z=-1.5} }
+    }
 
-    local loaded_data = JSON.decode(saved_data)
-    if loaded_data ~= '' then
-        count = loaded_data.saved_count
+    for index, button_table in pairs(button_list)
+    do
+        -- A stupid hack: here, TTS ignores Lua indexing at 1
+        if index == 0 then index = 'customSet' end
+
+        curr_button = { function_owner = self, width = 150, height = 300 }
+        curr_button.click_function = index
+
+        for attribute, value in pairs(button_table)
+        do
+            curr_button[attribute] = value
+        end
+
+        self.createButton(curr_button)
     end
-
-    b_display = {
-        click_function = 'customSet', function_owner = self,
-        position = {0,0.1,-1.5}, width = 300, height = 300
-    }
-    b_plus = {
-        click_function = 'increase', function_owner = self, label =  '+',
-        position = {0.4,0.1,-1.5}, width = 150, height = 300
-    }
-    b_minus = {
-        click_function = 'decrease', function_owner = self, label =  '-',
-        position = {-0.4,0.1,-1.5}, width = 150, height = 300
-    }
-
-    self.createButton(b_display)
-    self.createButton(b_plus)
-    self.createButton(b_minus)
 
     updateDisplay()
 end
@@ -42,6 +41,7 @@ end
 --Activates when - is hit. Subtracts 1 from 'count' then updates the display button.
 function decrease()
     --Prevents count from going below 0
+    --   count = count - 1 if count < 0 then count = 0 end
     if count > 0 then
         count = count - 1
         updateDisplay()
