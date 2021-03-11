@@ -14,7 +14,7 @@ function onLoad(saved_data)
     end
 
     b_display = {
-        index = 0, click_function = 'customSet', function_owner = self,
+        click_function = 'customSet', function_owner = self,
         position = {0,0.1,-1.5}, width = 300, height = 300
     }
     b_plus = {
