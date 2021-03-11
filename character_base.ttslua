@@ -57,14 +57,8 @@ function manual()
     end
 end
 
---function that updates the display. I trigger it whenever I change 'count'
 function updateDisplay()
-    --If statement to resize font size if it gets too long
-    if count >= 100 then
-        b_display.font_size = 180
-    else
-        b_display.font_size = 250
-    end
-    b_display.label = tostring(count)
-    self.editButton(b_display)
+    local fsize = count >= 100 and 180 or 250
+    local lbl = tostring(count)
+    self.editButton(index=0, font_size=fsize, label=lbl)
 end
