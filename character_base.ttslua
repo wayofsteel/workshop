@@ -26,16 +26,11 @@ function onLoad(saved_data)
         position = {-0.4,0.1,-1.5}, width = 150, height = 300, font_size = 100
     }
 
-    --Generates the buttons after putting the count value onto the 'display' button
-    b_display.label = tostring(count)
-    if count >= 100 then
-        b_display.font_size = 180
-    else
-        b_display.font_size = 250
-    end
     self.createButton(b_display)
     self.createButton(b_plus)
     self.createButton(b_minus)
+
+    updateDisplay()
 end
 
 --Activates when + is hit. Adds 1 to 'count' then updates the display button.
