@@ -32,16 +32,12 @@ function onLoad(saved_data)
     updateDisplay()
 end
 
---Activates when + is hit. Adds 1 to 'count' then updates the display button.
 function increase()
     count = count + 1
     updateDisplay()
 end
 
---Activates when - is hit. Subtracts 1 from 'count' then updates the display button.
 function decrease()
-    --Prevents count from going below 0
-    --   count = count - 1 if count < 0 then count = 0 end
     if count > 0 then
         count = count - 1
         updateDisplay()
@@ -49,10 +45,10 @@ function decrease()
 end
 
 function manual()
-    local description = self.getDescription()
-    if description != '' and type(tonumber(description)) == 'number' then
+    local desc = tonumber(self.getDescription())
+    if desc then
+        count = desc
         self.setDescription('')
-        count = tonumber(description)
         updateDisplay()
     end
 end
