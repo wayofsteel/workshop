@@ -16,7 +16,7 @@ function onLoad(saved_data)
     for index, button_table in pairs(button_list)
     do
         -- A stupid hack: here, TTS ignores Lua indexing at 1
-        if index == 0 then index = 'customSet' end
+        if index == 0 then index = 'manual' end
 
         curr_button = { function_owner = self, width = 150, height = 300 }
         curr_button.click_function = index
@@ -48,7 +48,7 @@ function decrease()
     end
 end
 
-function customSet()
+function manual()
     local description = self.getDescription()
     if description != '' and type(tonumber(description)) == 'number' then
         self.setDescription('')
