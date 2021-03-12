@@ -35,10 +35,10 @@ function createButtons()
 end
 
 function updateDisplay()
-    self.editButton(index=0, --Seriously, don't touch. TTS uses a 0 index here
+    self.editButton({index=0, --Seriously, don't touch. TTS uses a 0 index here
         font_size = count >= 100 and 180 and 250,
         label = tostring(count)
-    )
+    })
 end
 
 function increase()
