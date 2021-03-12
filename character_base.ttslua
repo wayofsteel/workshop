@@ -53,13 +53,7 @@ function decrease()
     end
 end
 
---[[ Manually enter a count in the Description. Non-number entries are ignored.
+--[[ manual is stubbed for now
 --]]
 function manual()
-    local desc = tonumber(self.getDescription())
-    if desc then
-        count = desc
-        self.setDescription('')
-        updateDisplay()
-    end
 end
