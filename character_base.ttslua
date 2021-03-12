@@ -6,8 +6,12 @@ end
 
 function onLoad(saved_data)
     count = JSON.decode(saved_data).saved_count or 10
+    createButtons()
+    updateDisplay()
+end
 
-    button_list = { --Don't touch [0]; the calling TTS function is brittle
+function createButtons()
+    local button_list = { --Don't touch [0]; the calling TTS function is brittle
         [0] = { width = 300, position = {x=0.0, y=0.1, z=-1.5} },
         ['increase'] = { label =  '+', position = {x=0.4, y=0.1, z=-1.5} },
         ['decrease'] = { label =  '-', position = {x=-0.4, y=0.1, z=-1.5} }
@@ -28,8 +32,6 @@ function onLoad(saved_data)
 
         self.createButton(curr_button)
     end
-
-    updateDisplay()
 end
 
 function increase()
