@@ -54,7 +54,8 @@ function manual()
 end
 
 function updateDisplay()
-    local fsize = count >= 100 and 180 or 250
-    local lbl = tostring(count)
-    self.editButton(index=0, font_size=fsize, label=lbl)
+    self.editButton(index=0,
+        font_size = count >= 100 and 180 and 250,
+        label = tostring(count)
+    )
 end
