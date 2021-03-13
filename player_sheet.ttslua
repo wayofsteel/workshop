@@ -288,27 +288,21 @@ function getStats()
   return stats
 end
 
---this function runs when the buttons on the sheet are clicked
 function statButton(player, clickIndex, id)
- local change = 1
- if clickIndex == "-2" then
-   change = -1
- end
+    local change = 1
+    if clickIndex == "-2" then change = -1 end
 
- local statInputs = save["statInputs"]
+    local statInputs = save["statInputs"]
+    local newValue = statInputs[id].value + change
 
- local newValue = statInputs[id].value + change
+    if statInputs[id].min ~= nil then
+        if statInputs[id].min <= newValue then
+            statInputs[id].value  = newValue
+        end
+    end
 
- if statInputs[id].min ~= nil then
-   if statInputs[id].min <= newValue then
-     statInputs[id].value  = newValue
-   end
- end
-
- --every times values change the UI is updated
- setUI()
- --and a new save is made
- self.script_state = onSave()
+    setUI()
+    self.script_state = onSave()
 end
 
 --when a player types in the name input field it updates the save data
