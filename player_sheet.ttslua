@@ -323,9 +323,6 @@ function onEndEdit(player, str)
   self.script_state = onSave()
 end
 
---function to get formatted save data whenever the object is saved and manually when it's called
 function onSave()
-   local currentSave = JSON.encode(save)
-
-  return currentSave
+  return JSON.encode(save)
 end
