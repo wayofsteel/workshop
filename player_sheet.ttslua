@@ -1,16 +1,17 @@
 function onLoad(save_state)
+    statColors = {
+        ["STR"] = "#B70025",
+        ["WIL"] = "#27C75D",
+        ["AGI"] = "#6DA1FD",
+        ["PER"] = "#ECC63B"
+    }
+    save = JSON.decode(save_state) or get_default_state()
+    Wait.frames(setUI, 10)
+end
 
-  statColors = {
-    ["STR"] = "#B70025",
-    ["WIL"] = "#27C75D",
-    ["AGI"] = "#6DA1FD",
-    ["PER"] = "#ECC63B"
-  }
-  --this code is making sure when the player sheets are saved and respawned they keep their saved data
- if save_state == "" then
-
+function get_default_state()
     --The values are in this section are the defaults that the player sheet will be set to if it has not been edited before. Text color should be changed here because for some reason editing the text borks the color.
-    save = {
+    return {
       statInputs = {
         ["Level"] = {
           value = 0,
@@ -65,12 +66,6 @@ function onLoad(save_state)
         }
       }
     }
-else
-    --If the object has ever been saved before it will grab the save
-    save = JSON.decode(save_state)
-end
-
- Wait.frames(function() setUI() end, 10)
 end
 
 --this function is for controlling the visuals on the sheet
