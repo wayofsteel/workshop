@@ -1,59 +1,30 @@
---[[ MrStump's Universal Counter Tokens (edited by EV)
+--[[ WoS Enemy Public Resolve Counter
 --]]
 function onSave()
     return JSON.encode({saved_count = count})
 end
 
 function onLoad(saved_data)
-    count = JSON.decode(saved_data).saved_count or 10
-    createButtons()
-    updateDisplay()
-end
-
-function createButtons()
-    local button_list = { --Don't touch [0]; the calling TTS function is brittle
-        [0] = { width = 300, position = {x=0.0, y=0.1, z=-1.5} },
-        ['increase'] = { label =  '+', position = {x=0.4, y=0.1, z=-1.5} },
-        ['decrease'] = { label =  '-', position = {x=-0.4, y=0.1, z=-1.5} }
-    }
-
-    for index, button_table in pairs(button_list)
-    do
-        -- A stupid hack: here, TTS ignores Lua indexing at 1
-        if index == 0 then index = 'manual' end
-
-        curr_button = { function_owner = self, width = 150, height = 300 }
-        curr_button.click_function = index
-
-        for attribute, value in pairs(button_table)
-        do
-            curr_button[attribute] = value
-        end
-
-        self.createButton(curr_button)
-    end
-end
-
-function updateDisplay()
-    self.editButton({index=0, --Seriously, don't touch. TTS uses a 0 index here
-        font_size = count >= 100 and 180 and 250,
-        label = tostring(count)
+    count = JSON.decode(saved_data).saved_count or 0
+    self.createButton({
+        click_function = 'adjust_count',
+        font_size = 225,
+        function_owner = self,
+        label = tostring(count),
+        height = 300,
+        width = 300,
+        position = { x=0.0, y=0.1, z=-1.5 }
     })
 end
 
-function increase()
-    count = count + 1
-    updateDisplay()
-end
+function adjust_count(obj, player, is_right_click)
+    local change = is_right_click and -1 or 1
 
-function decrease()
-    if count > 0 then
-        count = count - 1
-        updateDisplay()
-    end
-end
+    count = count + change
+    if count < -10 then count = -10 end
 
---[[ manual is stubbed for now
---]]
-function manual()
+    self.editButton({
+        index = 0, --Seriously, don't touch. TTS uses a 0 index here
+        label = tostring(count)
+    })
 end
