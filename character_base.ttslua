@@ -1,30 +1,139 @@
---[[ WoS Enemy Public Resolve Counter
+--[[ WoS Enemy Public Resolve and Stunt Counter
 --]]
 function onSave()
-    return JSON.encode({saved_count = count})
+    return JSON.encode(stats)
 end
 
 function onLoad(saved_data)
-    count = JSON.decode(saved_data).saved_count or 0
-    self.createButton({
-        click_function = 'adjust_count',
-        font_size = 225,
-        function_owner = self,
-        label = tostring(count),
-        height = 300,
-        width = 300,
-        position = { x=0.0, y=0.1, z=-1.5 }
-    })
+    stats = JSON.decode(saved_data) or get_fresh_stats()
+    create_buttons()
 end
 
-function adjust_count(obj, player, is_right_click)
-    local change = is_right_click and -1 or 1
+function get_fresh_stats()
+    local stats = {}
+    local button_updates = get_stat_button_updates()
 
-    count = count + change
-    if count < -10 then count = -10 end
+    for index, button_table in pairs(button_updates)
+    do
+        curr_table.vals = get_stat_values(button_table.vals, index)
+        curr_table.button = get_stat_button(button_table.button)
+        stats[index] = curr_table
+    end
 
+    return stats
+end
+
+function create_buttons()
+    for index, stat_table in pair(stats)
+    do
+        self.createButton(stat_table.button)
+    end
+end
+
+function get_stat_index(name)
+    for index, stat in pairs(stats)
+    do
+        if stat.button.click_function == name then return index end
+    end
+end
+
+function get_new_count(is_rclick, old_count, minimum)
+    local new_count = old_count + (is_rclick and -1 or 1)
+    return new_count >= minimum and new_count or minimum
+end
+
+function update_stat_button(is_rclick, name)
+    stat = stats[ get_stat_index(name) ]
+    stat.vals.count = get_new_count(is_rclick, stat.vals.count, stat.vals.min)
     self.editButton({
-        index = 0, --Seriously, don't touch. TTS uses a 0 index here
-        label = tostring(count)
+        index = stat.index,
+        label = stat.label_function( stat.vals.count )
     })
+    self.script_state = onSave()
+end
+
+function update_known_damage(obj, player, altclick)
+    update_stat_button(altclick, "update_known_damage")
+end
+
+function update_stunt_off(obj, player, altclick)
+    update_stat_button(altclick, "update_stunt_off")
+end
+
+function update_stunt_def(obj, player, altclick)
+    update_stat_button(altclick, "update_stunt_def")
+end
+
+function update_stunt_mob(obj, player, altclick)
+    update_stat_button(altclick, "update_stunt_mob")
+end
+
+function update_stunt_tac(obj, player, altclick)
+    update_stat_button(altclick, "update_stunt_tac")
+end
+
+function get_stat_button_updates()
+    return {
+        [0] = {
+            vals = {
+                min = -10
+            },
+            button = {
+                click_function = "update_known_damage",
+                font_size = 225,
+                rotation = { x = 0, y = 0, z = 0 }
+            },
+        },
+        [1] = {
+            button = {
+                click_function = "update_stunt_off",
+                font_color = "#B70025"
+            }
+        },
+        [2] = {
+            button = {
+                click_function = "update_stunt_def",
+                font_color = "#27C75D"
+            }
+        },
+        [3] = {
+            button = {
+                click_function = "update_stunt_mob",
+                font_color = "#6DA1FD"
+            }
+        },
+        [4] = {
+            button = {
+                click_function = "update_stunt_tac",
+                font_color = "#ECC63B"
+            }
+        }
+    }
+end
+
+function get_stat_values(updates, lbl_func_idx)
+    local idx = lbl_func_idx > 1 and 1 or 0
+    local label_funcs = {
+        [0] = function(x) return tostring(x) end,
+        [1] = function(x) return string.rep("* ", x) end
+    }
+
+    return {
+        count = updates.count or 0,
+        label_function = label_funcs[idx],
+        min = updates.min or 0
+    }
+end
+
+function get_stat_button(updates)
+
+    return {
+        font_size = updates.font_size or 64,
+        font_color = updates.font_color or "black",
+        function_owner = updates.function_owner or self,
+        height = updates.height or 300,
+        width = updates.width or 300,
+        position = updates.pos or { x = 0.0, y = 0.1, z = -1.5 },
+        rotation = updates.rot or { x = 0.0, y = 90, z = 0.0 }
+    }
 end
