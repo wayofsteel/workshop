@@ -55,7 +55,7 @@ function create_buttons_stupid()
             b= 37/255,
           },
       position=     {
-          x= 0.75,
+          x= -0.50,
           y= 0.1,
           z= -1.2,
         },
@@ -66,7 +66,7 @@ function create_buttons_stupid()
       }
     })
     self.createButton({
-      font_size= 100,
+      font_size= 200,
       function_owner= self,
       height= 100,
       width= 100,
@@ -83,7 +83,7 @@ function create_buttons_stupid()
             93/255,
           },
       position=     {
-          x= 0.5,
+          x= -0.85,
           y= 0.1,
           z= -1.2,
         },
@@ -94,7 +94,7 @@ function create_buttons_stupid()
         }
     })
     self.createButton({
-      font_size= 100,
+      font_size= 200,
       function_owner= self,
       height= 100,
       width= 100,
@@ -111,7 +111,7 @@ function create_buttons_stupid()
             b= 253/255,
           },
       position=     {
-          x= -0.5,
+          x= -1.2,
           y= 0.1,
           z= -1.2,
         },
@@ -122,7 +122,7 @@ function create_buttons_stupid()
         }
     })
     self.createButton({
-      font_size= 100,
+      font_size= 200,
       function_owner= self,
       height= 100,
       width= 100,
@@ -139,7 +139,7 @@ function create_buttons_stupid()
             b= 59/255,
           },
       position=     {
-          x= -0.75,
+          x= -1.55,
           y= 0.1,
           z= -1.2,
         },
