@@ -1,38 +1,52 @@
 --[[ WoS Enemy Public Resolve and Stunt Counter
 --]]
+
 function onSave()
-    --return JSON.encode(stats)
+    return JSON.encode(stats)
+end
+
+--[[ recordChange exists in case onSave's role has to expand
+--]]
+function recordChange()
+    self.script_state = JSON.encode(stats)
 end
 
 function onLoad(saved_data)
---    stats = JSON.decode(saved_data) or build_stats_table()
-    stats = build_stats_table()
+    stats = JSON.decode(saved_data) or build_stats_table()
     create_buttons()
 end
 
-function create_buttons()
-    for _, stat in ipairs(stats)
+function onHover(player_color)
+    make_buttons_invisible(false)
+    Wait.time( function() make_buttons_invisible(true) end, 5)
+end
+
+function make_buttons_invisible(is_visible)
+    local color_off = {r = 0, g = 0, b = 0, a = 0}
+    for idx, btn in ipairs(self.getButtons())
     do
-        self.createButton(stat.button)
+        curr_color = is_visible and color_off or btn.hover_color
+        update_button( idx, { color = curr_color } )
     end
 end
 
-function get_stat_defaults(selection_name)
-    local defaults_table = {
-        ["button"] = {
-            font_size = 200,
-            function_owner = self,
-            height = 200,
-            width = 200,
-            color = { r = 0, g = 0, b = 0, a = 0}
-        },
-        ["vals"] = {
-            count = 0,
-            min = 0
-        }
-    }
+function create_buttons()
+    for idx, stat in ipairs(stats)
+    do
+        self.createButton(stat.button)
+        update_button(idx, {
+            function_owner=self,
+            click_function=stat.button.click_function
+        })
+    end
+end
 
-    return defaults_table[selection_name]
+--[[ A helper function to compensate for editButton's use of a 0-index
+--]]
+function update_button(given_index, changes_table)
+    changes_table.index = given_index - 1
+    self.editButton(changes_table)
+    recordChange()
 end
 
 function build_button(button_data)
@@ -43,7 +57,7 @@ function build_button(button_data)
         curr_tbl[attr_name] = get_stat_defaults(attr_name)
         for key, value in pairs(attr_table)
         do
-            if value then  curr_tbl[attr_name][key] = value end
+            curr_tbl[attr_name][key] = value
         end
     end
 
@@ -62,6 +76,69 @@ function build_stats_table()
     return stats_array
 end
 
+function get_stat_index(name)
+    for index, stat in pairs(stats)
+    do
+        if stat.button.click_function == name then return index end
+    end
+end
+
+function get_new_count(old_count, minimum, adjustment)
+    local adjusted_count = old_count + adjustment
+    return adjusted_count >= minimum and adjusted_count or minimum
+end
+
+function update_count(stat, adjust)
+    local count = get_new_count(stat.vals.count, stat.vals.min, adjust)
+    stat.vals.count = count
+    return count
+end
+
+function update_stat_count(is_rclick, name)
+    local adjustment = is_rclick and -1 or 1
+    local stat_idx = get_stat_index(name)
+    local new_count = update_count(stats[stat_idx], adjustment)
+    update_button( stat_idx, { label = tostring(new_count) } )
+end
+
+--[[ Button and Stat Functions and Default Data
+--]]
+function update_known_damage(obj, player, altclick)
+    update_stat_count(altclick, "update_known_damage")
+end
+
+function update_stunt_off(obj, player, altclick)
+    update_stat_count(altclick, "update_stunt_off")
+end
+
+function update_stunt_def(obj, player, altclick)
+    update_stat_count(altclick, "update_stunt_def")
+end
+
+function update_stunt_mob(obj, player, altclick)
+    update_stat_count(altclick, "update_stunt_mob")
+end
+
+function update_stunt_tac(obj, player, altclick)
+    update_stat_count(altclick, "update_stunt_tac")
+end
+
+function get_stat_defaults(selection_name)
+    local defaults_table = {
+        ["button"] = {
+            font_size = 200,
+            height = 200,
+            width = 200,
+            color = { r = 0, g = 0, b = 0, a = 0}
+        },
+        ["vals"] = {
+            count = 0,
+            min = 0
+        }
+    }
+    return defaults_table[selection_name]
+end
+
 function get_button_build_list()
     return {
         {
@@ -73,7 +150,6 @@ function get_button_build_list()
                 position = { x = 0, y = 0.1, z = -1.5}
             },
             ["vals"] = {
-                count = 0,
                 min = -10
             }
         },
@@ -83,10 +159,7 @@ function get_button_build_list()
                 position = { x = -0.50, y = 0.1, z = -1.2 },
                 hover_color = { r = 183/255, g = 0/255, b = 37/255 }-- "#B70025"
             },
-            ["vals"] = {
-                count = 0,
-                min = 0
-            }
+            ["vals"] = {}
         },
         {
             ["button"] = {
@@ -113,49 +186,4 @@ function get_button_build_list()
             ["vals"] = {}
         }
     }
-end
-
-function get_stat_index(name)
-    for index, stat in pairs(stats)
-    do
-        if stat.button.click_function == name then return index end
-    end
-end
-
-function get_new_count(is_rclick, old_count, minimum)
-    local new_count = old_count + (is_rclick and -1 or 1)
-    return new_count >= minimum and new_count or minimum
-end
-
-function update_stat_button(is_rclick, name)
-    local stat_idx = get_stat_index(name)
-    stat = stats[stat_idx]
-    stat.vals.count = get_new_count(is_rclick, stat.vals.count, stat.vals.min)
-
-    self.editButton({ -- Lua is 1-index, this dumb TTS function is 0-index
-        index = stat_idx - 1,
-        label = tostring( stat.vals.count )
-    })
-
-    --self.script_state = onSave()
-end
-
-function update_known_damage(obj, player, altclick)
-    update_stat_button(altclick, "update_known_damage")
-end
-
-function update_stunt_off(obj, player, altclick)
-    update_stat_button(altclick, "update_stunt_off")
-end
-
-function update_stunt_def(obj, player, altclick)
-    update_stat_button(altclick, "update_stunt_def")
-end
-
-function update_stunt_mob(obj, player, altclick)
-    update_stat_button(altclick, "update_stunt_mob")
-end
-
-function update_stunt_tac(obj, player, altclick)
-    update_stat_button(altclick, "update_stunt_tac")
 end
