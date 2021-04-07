@@ -2,135 +2,124 @@
 
 A Luddite's Quick Guide to Adding Counter Buttons
 
-Step 1: Add an entry to initial_stat_data.
-Step 2: Add the button's function below the others.
+Step 1: Add to the onboard buttons in get_onboard_buttons()
+Step 2: Add a function below the other button functions
+Step 3: Save the new base as a new object and ensure it works before playing!
+Step 4: (Optional) Yell at Evan if something goes horribly wrong.
 
 When possible, copy-paste from a working button.
 Pay close attention; a missing comma can ruin your day.
 --]]
 
 --[[ GLOBAL VARIABLES (change in one place, as opposed to all over the place)
-
-hover_time: number of seconds base buttons are visible when a player hovers
-
-stat_defaults: defaults common among all stats
-    NOTE: count and min in vals table are named in update_stat_count()
-
-initial_stat_data: all starting stats, button data, and values
-    NOTE: click_function in button table is vital to script functionality
-
-    Example for adding a new entry to initial_stat_data:
-    {
-        button = {--Stat: Coolness Factor, color is #AAAAAA
-            click_function = "update_cool_factor",
-            hover_color = { r = 170/255, g = 170/255, b = 170/255 },
-            position = { x = -2.0, y = 0.1, z = -1.2 }
-        },
-        vals = {},
-    },
 --]]
-hover_time = 5
 
-function get_stat_defaults(choice)
-    local stat_defaults = {
-        button = {
-            font_size = 160,
-            height = 200,
-            width = 200,
-            color = { r = 0, g = 0, b = 0, a = 0 }
-        },
-        vals = {
-            count = 0,
-            min = 0
-        }
-    } --End of stat_defaults
-    return stat_defaults[choice]
+--hover_time: number of seconds base buttons are visible when a player hovers
+hover_time = 10
+
+--[[get_basic_button() returns defaults common among all stat buttons
+    NOTE: count and min are named in update_stat_count()
+    NOTE: label_func is named in get_label()
+    NOTE: always_on is named in get_color()
+--]]
+function get_basic_button()
+    return {
+        font_size = 160,
+        label_func = "default",
+        height = 200,
+        width = 200,
+        count = 0,
+        min = 0,
+        always_on = false
+    }
 end
 
-function get_initial_stat_data()
-    return {-- initial_stat_data
-        {
-            button = {--Resolve: Known Damage
-                click_function = "update_known_damage",
-                hover_color = { r = 100/255, g = 100/255, b = 100/255 },
-                position = { x = 0, y = 0.1, z = -1.5},
-                height = 280,
-                width = 280,
-                font_size = 200
-            },
-            vals = {
-                min = -10
-            }
+--[[ get_onboard_buttons() returns array of initial data for all buttons
+    NOTE: click_function in button table is vital to script functionality
+    NOTE: If label function is set to cycle:
+        * The button must have an always_on flag set to true
+        * The button must also have a cycle_options table.
+        * One of the cycle options must be an empty space (i.e. " ").
+--]]
+function get_onboard_buttons()
+    return {-- Initial button data
+        {--Resolve: Known Damage
+            click_function = "update_known_damage",
+            hover_color = { r = 100/255, g = 100/255, b = 100/255 },
+            position = { x = 0, y = 0.1, z = -1.5},
+            height = 280,
+            width = 280,
+            font_size = 200,
+            min = -10
         },
-        {
-            button = {--Stunt: Offense, color is #B70025
-                click_function = "update_stunt_off",
-                hover_color = { r = 183/255, g = 0/255, b = 37/255 },
-                position = { x = 0.5, y = 0.1, z = -1.5 }
-            },
-            vals = {}
+        {--Stunt: Offense, color is #B70025
+            click_function = "update_stunt_off",
+            hover_color = { r = 183/255, g = 0/255, b = 37/255 },
+            position = { x = 0.5, y = 0.1, z = -1.5 }
         },
-        {
-            button = {--Stunt: Defense, color is #27C75D
-                click_function = "update_stunt_def",
-                hover_color = { r = 39/255, g = 199/255, b = 93/255 },
-                position = { x = 0.875, y = 0.1, z = -1.5 }
-            },
-            vals = {}
+        {--Stunt: Defense, color is #27C75D
+            click_function = "update_stunt_def",
+            hover_color = { r = 39/255, g = 199/255, b = 93/255 },
+            position = { x = 0.875, y = 0.1, z = -1.5 }
         },
-        {
-            button = {--Stunt: Mobility, color is #6DA1FD
-                click_function = "update_stunt_mob",
-                hover_color = { r = 109/255, g = 161/255, b = 253/255 },
-                position = { x = 1.25, y = 0.1, z = -1.5 }
-            },
-            vals = {}
+        {--Stunt: Mobility, color is #6DA1FD
+            click_function = "update_stunt_mob",
+            hover_color = { r = 109/255, g = 161/255, b = 253/255 },
+            position = { x = 1.25, y = 0.1, z = -1.5 }
         },
-        {
-            button = {--Stunt: Tactics, color is #ECC63B
-                click_function = "update_stunt_tac",
-                hover_color = { r = 236/255, g = 198/255, b = 59/255 },
-                position = { x = 1.625, y = 0.1, z = -1.5 }
-            },
-            vals = {}
+        {--Stunt: Tactics, color is #ECC63B
+            click_function = "update_stunt_tac",
+            hover_color = { r = 236/255, g = 198/255, b = 59/255 },
+            position = { x = 1.625, y = 0.1, z = -1.5 }
+        },
+        {--Condition: Stun/Stagger
+            click_function = "update_condition_stun_stagger",
+            hover_color = { r = 236/255, g = 198/255, b = 59/255 },
+            position = { x = -1.625, y = 0.1, z = -1.5 },
+            label_func = "cycle",
+            cycle_options = {" ", "?", "??"},
+            always_on = true
         }
-    }--End of initial_stat_data
+    }--End of initial button data
 end
 --[[ END OF GLOBAL VARIABLES
 --]]
 
 --[[ Button Functions
 
-Each button needs its own function. These are all "helper" functions that tell
-a common function who is calling, BECAUSE TTS DOESN'T NATIVELY DO THAT.
+    Each button needs its own function.
+    These are all "helper" functions that tell a common function who is calling,
+    BECAUSE TTS DOESN'T NATIVELY DO THAT.
 
-But a new function could be written to do something completely different.
+    Example function (don't leave out obj, player, or altclick!):
 
-Example function (don't leave out obj, player, or altclick!):
-
-function say_hello(obj, player, altclick)
-    local click_type = altclick and " right-clicked" or " left-clicked"
-    print("Player " .. player .. click_type)
-end
+    function say_hello(obj, player, altclick)
+        local click_type = altclick and " right-clicked" or " left-clicked"
+        print("Player " .. player .. click_type)
+    end
 --]]
 function update_known_damage(obj, player, altclick)
-    update_stat_count(altclick, "update_known_damage")
+    update_stat_button(altclick, "update_known_damage")
 end
 
 function update_stunt_off(obj, player, altclick)
-    update_stat_count(altclick, "update_stunt_off")
+    update_stat_button(altclick, "update_stunt_off")
 end
 
 function update_stunt_def(obj, player, altclick)
-    update_stat_count(altclick, "update_stunt_def")
+    update_stat_button(altclick, "update_stunt_def")
 end
 
 function update_stunt_mob(obj, player, altclick)
-    update_stat_count(altclick, "update_stunt_mob")
+    update_stat_button(altclick, "update_stunt_mob")
 end
 
 function update_stunt_tac(obj, player, altclick)
-    update_stat_count(altclick, "update_stunt_tac")
+    update_stat_button(altclick, "update_stunt_tac")
+end
+
+function update_condition_stun_stagger(obj, player, altclick)
+    update_stat_button(altclick, "update_condition_stun_stagger")
 end
 --[[ END OF FUNCTIONS
 --]]
@@ -146,19 +135,24 @@ function onSave()
 end
 
 function onLoad(saved_data)
-    stats = build_stats(JSON.decode(saved_data))
+    stats = JSON.decode(saved_data) or get_new_button_data()
+    for idx, btn in ipairs(stats)
+    do
+        self.createButton({
+            function_owner = self,
+            click_function = btn.click_function
+        })
+        update_button(idx, btn)
+    end
 end
 
 --[[ onHover() shows buttons for hover_time seconds. (hover_time is a global)
 --]]
 function onHover(player_color)
     local function make_buttons_invisible(is_visible)
-        local color_off = {r = 0, g = 0, b = 0, a = 0}
-        local btns = self.getButtons() -- move inside ipairs when bug-free
-        for idx, btn in ipairs(btns)
+        for idx, btn in ipairs(stats)
         do
-            curr_color = is_visible and color_off or btn.hover_color
-            update_button( idx, { color = curr_color } )
+            update_button( idx, btn, is_visible )
         end
     end
 
@@ -166,73 +160,84 @@ function onHover(player_color)
     Wait.time( function() make_buttons_invisible(true) end, hover_time)
 end
 
---[[ record_button_change() exists in case its role or onSave's has to expand
+--[[ record_button_changes() exists in case its role or onSave's has to expand
 --]]
-function record_button_change()
+function record_button_changes()
     self.script_state = onSave()
 end
 
---[[ create_button() is a helper for the createButton method
-
-    I still don't understand why this is necessary. And I don't care.
+--[[ get_label() returns a label based on the table's label function and count
 --]]
-function create_button(idx, btn, count)
-    self.createButton(btn)
-    update_button(idx, {
-        function_owner=self,
-        click_function=btn.click_function,
-        label = tostring(count)
-    })
+function get_label(tbl)
+    local display_functions = {
+        ["default"] = function(x)
+            return tostring(x)
+        end,
+        ["cycle"] = function(x)
+            return tbl.cycle_options[x % #tbl.cycle_options + 1]
+        end
+    }
+    return display_functions[tbl.label_func](tbl.count)
+end
+
+--[[ get_color() returns a transparent button or the button's hover color
+--]]
+function get_color(tbl, is_visible)
+    local ret_color = {}
+    on_color = tbl.hover_color
+    off_color = {r = 0, b = 0, g = 0, a = 0}
+    if tbl.always_on
+    then
+        ret_color = (tbl.label ~= " ") and on_color or off_color
+    else
+        ret_color = is_visible and off_color or on_color
+    end
+    return ret_color
 end
 
 --[[ update_button() adjusts for editButton's 0-index in a Lua system. (Wack.)
 --]]
-function update_button(given_index, changes_table)
-    changes_table.index = given_index - 1
-    self.editButton(changes_table)
-    record_button_change()
+function update_button(given_index, tbl, cond)
+    local update = tbl
+    update.index = given_index - 1
+    update.label = get_label(tbl)
+    update.color = get_color(update, cond)
+    self.editButton(update)
+    record_button_changes()
 end
 
-function override_defaults(attr_name, button_data)
-    local curr_tbl = get_stat_defaults(attr_name)
-
-    for key, value in pairs(button_data)
+--[[ get_new_button_data() is called when the base is fresh (has no saved state)
+--]]
+function get_new_button_data()
+    local btn_arr = {}
+    for idx, value in ipairs(get_onboard_buttons())
     do
-        curr_tbl[key] = value
+        btn_arr[idx] = override_defaults(value)
     end
-
-    return curr_tbl
+    return btn_arr
 end
 
-function build_stats(load)
-    local arr = {}
-
-    for idx, stat in ipairs(get_initial_stat_data())
+--[[ override_defaults() starts with the basic button and customizes it.
+--]]
+function override_defaults(source_btn)
+    local btn_tbl = get_basic_button()
+    for key, value in pairs(source_btn)
     do
-        arr[idx] = {}
-        for stat_attr, attr_tbl in pairs(stat)
-        do
-            if load and stat_attr ~= "button"
-            then
-                arr[idx][stat_attr] = load[idx][stat_attr]
-            else
-                arr[idx][stat_attr] = override_defaults(stat_attr, attr_tbl)
-            end
-        end
-        create_button(idx, arr[idx].button, arr[idx].vals.count)
+        btn_tbl[key] = value
     end
-
-    return arr
+    return btn_tbl
 end
 
 --[[ get_adjusted_count() accounts for a stat minimum
-    If a maximum were necessary, the logic would likely fit best here.
-]]
-function get_adjusted_count(old_count, minimum, adjustment)
-    local adjusted_count = old_count + adjustment
+    NOTE: If a maximum were necessary, the logic would likely fit best here.
+--]]
+function get_adjusted_count(is_rclick, old_count, minimum)
+    local adjusted_count = old_count + (is_rclick and -1 or 1)
     return adjusted_count >= minimum and adjusted_count or minimum
 end
 
+--[[ get_stat_index() returns the button's index based on the button's name
+--]]
 function get_stat_index(name)
     for index, stat_button in ipairs(self.getButtons())
     do
@@ -240,12 +245,14 @@ function get_stat_index(name)
     end
 end
 
-function update_stat_count(is_rclick, name)
-    local adjustment = is_rclick and -1 or 1
-    local stat_idx = get_stat_index(name)
+function update_stat_count(is_rclick, btn)
+    btn.count = get_adjusted_count(is_rclick, btn.count, btn.min)
+end
 
-    stat = stats[stat_idx].vals
-    stat.count = get_adjusted_count(stat.count, stat.min, adjustment)
-    update_button( stat_idx, { label = tostring(stat.count) } )
+function update_stat_button(is_rclick, name)
+    local stat_idx = get_stat_index(name)
+    stat_btn = stats[stat_idx]
+    update_stat_count(is_rclick, stat_btn)
+    update_button(stat_idx, stat_btn)
 end
 --End of File
